@@ -1,0 +1,797 @@
+
+{%- liquid
+  if collection.url.size == 0
+    assign results_url = routes.all_products_collection_url
+  else
+    assign results_url = collection.url
+  endif
+
+  if results_url contains "?"
+    assign results_url = results_url | split: "?" | first
+  endif
+
+  assign current_sort_by = collection.sort_by | default: collection.default_sort_by
+-%}
+
+
+
+{% style %}
+  .variations_button {
+  	display: none;
+  }
+  span.gfqv-product__swatch-inner>.gfqv-swatch-text {
+  	color: transparent;
+  }
+  span.gfqv-swatch-image {
+  	border-radius: 50%;
+  }
+  .product-list-container .product-block{margin-top:40px}
+  .collection_sort-block{background:#fafafa;margin-top:30px;margin-bottom:50px}
+  .id-product_grid_sort{border: none;background: #fafafa;}
+  .id-product_grid_sort .text .label, .cc-product-filter .cc-tabs__tab:first-child, .globo-selected-items .gf-clear svg, #gf-tree .globo-selected-items-wrapper{display:none}
+  .cc-product-filter .cc-tabs__tab:nth-child(2) .cc-tabs__accordion__header{border-top:none}
+  .selected-item.gf-option-label a{color:#333;background:#eee !important}
+  #gf-controls-container .globo-selected-items-wrapper .globo-selected-items span.selected-item strong{text-transform:uppercase;padding:4px 6px 4px 8px}
+  .selected-item span.gf-clear{width:16px;height:16px;background-image:none;margin-right:8px}
+  .selected-item span.gf-clear svg{display:block;width:16px;height:16px;border-radius: 10px;padding: 2px;display: block;}
+  #gf-controls-container .selected-item.gf-option-label{cursor:pointer}
+  .clear-refinements{line-height:43px;margin-left:10px;cursor:pointer}
+  .gf-option-one-color, .gf-option-two-color, .gf-swatch-image {
+      width: 29px !important;
+      height: 29px !important;
+      border-radius: 100%;
+      top: 0px;
+      border: none !important;
+      left: 2px;
+  }
+  .gf-option-block-swatch ul li a {
+      width: 33px;
+      height: 33px;
+      border-radius: 100%;
+      box-shadow: 0 0 0 2px #e9e9e9;
+      transition: box-shadow .5s;
+      padding: 2px;
+  }
+  .gf-option-block-swatch ul li a:hover{box-shadow:0 0 0 2px grey}
+  .gf-option-block-swatch ul li a.checked{box-shadow:0 0 0 1px #222}
+  .gf-option-block.gf-option-block-swatch .gf-option-box li{padding:2px !important}
+  .gf-option-block.gf-option-block-swatch .gf-option-box li{margin-bottom:10px}
+  .h4.spf-product-card__title a{font:400 16px LaguSansRegular,sans-serif;line-height: 1.3em;padding-top:2px}
+  .spf-product-card__price{font:400 14px LaguSansRegular,sans-serif;line-height: 1.3em;}
+  .spf-product-card__price-wrapper{padding-top:5px}
+  .spf-col-xl-4{padding-left:0;padding-right:0}
+  .spf-product__info{padding-left:10px;padding-right:10px;}
+  #gf-products .spf-product-card .spf-product__form a.open-quick-view svg, .spf-product__form-btn-addtocart{display:none !important}
+  .spf-product-card.spf-product-card__template-4 .spf-product__form{width:100%;padding:0 10px;}
+  #gf-products .spf-product-card.spf-product-card__template-4 .spf-product__form a.open-quick-view, .spf-product-card.spf-product-card__template-4 .spf-product__form{transform:translateY(150%);}
+  .spf-product__form-btn-addtocart{color:#fff !important}
+  .gf-left .gf-option-block .gf-block-title h3:after{margin-top:3px}
+  .gf-block-title span{font:600 12px LaguSansRegular,sans-serif;letter-spacing:5px;text-transform:uppercase}
+  #gf-products .spf-product-card .spf-product__form a.open-quick-view{
+  	font-size:14px;background:#e0b286 !important;border:none !important;transition: opacity .3s,color .3s,background-color .3s,border-color .3s,transform .3s;
+  }
+  #gf-products .spf-product-card .spf-product__form a.open-quick-view:hover{
+    background:#cba37d !important;
+  }
+  .open-quick-view:after{
+  	content:'QUICK SHOP';
+    display:block;
+    width:100%;
+    height:50px;
+    line-height: 48px;
+  }
+  #gfqv-btn{
+  	background:#e0b286 !important;
+    transition: opacity .3s,color .3s,background-color .3s,border-color .3s,transform .3s;
+    border:none !important;
+    font-size: 13px!important;
+    letter-spacing: .13em;
+    font-family: LaguSansExtraBold!important;
+    border-radius: 4px!important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+  #gfqv-btn:hover{
+  	background:#cba37d !important;
+  }
+  .gfqv-description h5{
+  	font-family: LaguSansRegular,sans-serif !important;
+    font-size:18px;
+  }
+  
+  .is-selected .gfqv-product__swatch-outer-image {
+  	border-radius: 50%;
+  }
+  
+  span.gfqv-product__swatch-inner {
+  	border-radius: 50%;
+  }
+  .gfqv-description{
+    margin-top:30px;
+  	font-size: 15px;
+    line-height: 1.5em;
+  }
+  #gfqv-modal .gfqv-product-details .gfqv-product-title{
+  	font-size:20px !important;
+    text-align:left;
+  }
+  .gfqv-product-card__price{
+  	font-size:18px
+  }
+  span.gfqv-product__swatch-inner>.gfqv-swatch-text{
+      display: flex;
+      min-width: 36px !important;
+      min-height: 36px !important;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      justify-content: center;
+      align-items: center;
+      opacity: .8;
+      text-align: center;
+      line-height: 1.2em;
+      font-weight: 200;
+      position: relative;
+      transition: opacity .5s;
+      border: 1px solid #000;
+      font-size: 16px;
+  }
+  .gfqv-swatch-values{padding-left:0}
+  .gfqv-swatch-value{
+  	padding-left:5px;
+    cursor:pointer
+  }
+  .gfqv-swatch>label{
+  	font-weight: 600;
+    text-transform: capitalize;
+  }
+  .gfqv-swatch-image{
+  	width:34px !important;
+    height:34px !important;
+  }
+  .gfqv-product_color{
+    border: 2px solid #ffffff;
+    border-radius: 50% !important;
+    box-shadow: 0px 0px 4px 0px rgb(0 0 0 / 30%);
+    -moz-box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 0px 4px 0px rgb(0 0 0 / 30%);
+    transition: box-shadow 0.4s;
+  }
+  .is-selected .gfqv-product_color_parent{
+      box-shadow: 0px 0px 8px 0px rgb(0 0 0 / 60%);
+      -moz-box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.6);
+      -webkit-box-shadow: 0px 0px 8px 0px rgb(0 0 0 / 60%);
+      border-radius: 50%;
+  }
+  .gfqv-product-details{padding-right:20px}
+  .gfqv-close-modal{margin:10px 10px 0 0;}
+  a.tabs_link{display:block;font-weight:bold;padding:12px 12px 12px 25px;position:relative}
+  a.tabs_link:before{
+  	content:'';
+    display:block;
+    width:10px;
+    background:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMzIwIj48cGF0aCBmaWxsPSIjMzMzMzMzIiBkPSJNMTQzLjEsMjU2LjI1IEw3LjEsMTIwLjI1IGMtOS40LC05LjQgLTkuNCwtMjQuNiAwLC0zMy45IGwyMi42LC0yMi42IGM5LjQsLTkuNCAyNC42LC05LjQgMzMuOSwwIGw5Ni40LDk2LjQgbDk2LjQsLTk2LjQgYzkuNCwtOS40IDI0LjYsLTkuNCAzMy45LDAgbDIyLjYsMjIuNiBjOS40LDkuNCA5LjQsMjQuNiAwLDMzLjkgbC0xMzYsMTM2IGMtOS4yLDkuNCAtMjQuNCw5LjQgLTMzLjgsMCB6Ij48L3BhdGg+PC9zdmc+') no-repeat 0 50%;
+    background-size:contain;
+    height: 30px;
+    position:absolute;
+    left:0;
+    bottom:6px;
+  }
+  a.tabs_link.active:before{
+  -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -webkit-transform: rotate(
+180deg);
+    -o-transform: rotate(180deg);
+    transform: rotate(
+180deg);
+  }
+  .tabs_desc * {font-size:15px !important;}
+  .tabs_desc{display:none;margin-top:25px}
+  
+  @media (max-width: 768px) {
+  	.collection_sort-block{padding:0 10px;}
+    .collection_sort-block{display:none}
+  }
+  @media (min-width: 769px) {
+    .gf-left #gf-tree{
+      position:sticky;
+      position:-webkit-sticky;
+   
+      width:185px;
+    }
+    #gf-grid{width:calc(100% - 210px) !important;padding-left:10px !important;}
+  	.collection_sort-block{padding:0 25px;}
+    .gf-filter-selection, .gf-summary{display:none}
+    #gf-grid .globo-selected-items-wrapper{display: block !important;}
+    #shopify-section-collection-template{overflow:inherit}
+  }
+  
+
+
+  .form-horizontal {
+	background: #fafafa;
+    margin-top: 30px;
+    margin-bottom: 0;
+    padding: 10px 25px;
+  }
+   .pretty-select, .disclosure .disclosure__toggle {
+      display: inline-block;
+      position: relative;
+      background: none;
+      color: #222;
+      border: none;
+      text-align: left;
+      padding: 0;
+  }
+  @media (max-width: 990px){
+    .footer-button-xs {
+    	position: relative;
+      margin-top: 15px;
+      height: 55px;
+    }
+    .pb-medium {
+    	padding: 0;
+    }
+    .form-horizontal .label {
+      display: none;
+    }
+    .form-horizontal {
+    	margin:0;
+    }
+    .pretty-select {
+    	width: 100%;
+    }
+    .form-horizontal {
+    	padding: 5px 10px;
+    }
+  }
+  .pretty-select svg, .disclosure .disclosure__toggle svg {
+  	right: -1px;
+  }
+  .FacetsForm {
+  	display: none;
+  }
+  .form-horizontal  svg {
+  	display: block!important;
+  }
+  
+  .gfqv-product-details {
+  	display: flex;
+    flex-direction: column;
+  }
+  .gfqv-description {
+    order: 6; 
+  }
+  
+  .gfqv-swatch-value span {
+  	color: #000!important;
+  }
+  
+  .easytabs-container .easytabs-tab-item .easytabs-header-text, .easytabs-container .easytabs-accordion-item .easytabs-header-text {
+  	font-weight: 600;
+  }
+  
+  .gfqv-swatch-value.is-selected span{
+  	color: #fff!important;
+  }
+  
+  .gfqv-swatchs {
+  	display: flex;
+    flex-direction: column-reverse;
+  }
+  
+  @media (max-width: 990px) {
+    .spf-has-filter #gf-products {
+    	margin: 0;
+    }
+    .cc-product-filter-container .gf-filter-selection{
+    	display: none;
+    }
+    .cc-product-filter-container .footer-button-xs {
+    	display: none;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .gf-filter-trigger, .gf-filter-selection {
+    	max-width: 100%!important;
+    }
+  }
+  
+  span.gf-close-canvas {
+  	display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+   .gfqv-product-card__price {
+  	font-weight: 400;
+  }
+  
+  #gfqv-modal .gfqv-product-details .gfqv-product-title {
+  	margin-top: 30px!important;
+  }
+  
+  #gfqv-modal .gfqv-modal-content .product .gfqv-close-modal:before, #gfqv-modal .gfqv-modal-content .product .gfqv-close-modal:after {
+  	height: 22px!important;
+  }
+  
+  #gfqv-modal .gfqv-product-details .gfqv-product-title {
+  	font-weight: 600;
+  }
+  
+  .gfqv-swatch {
+  	margin-bottom: 15px;
+  }
+  
+  
+  .quick_url {
+  	font-family: Poppins,sans-serif;
+	font-size: 14.5px;
+    display: block;
+    margin: 10px 0;
+   	font-weight: 400;
+  }
+  
+  @media (max-width: 576px) {
+    .product-block {
+      flex: 0 0 50%;
+      max-width: 50%;
+      margin-top: 0!important;
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+  }
+  
+  .collection_bottom .p1 {
+  	text-align: justify;
+  }
+  
+  .collection_bottom p {
+  	text-align: justify;
+  }
+  
+  .collection_bottom li {
+  	text-align: justify;
+  }
+  
+  .gf-option-two-color {
+  	overflow: hidden;
+  }
+
+.mobile_filter_call {
+	display: none;
+}
+
+@media (max-width: 990px) {
+  .mobile_filter_call {
+    display: block;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    height: 38px;
+	margin: 10px 0 10px 0;
+    font-family: SuisseIntl-Light-WebXL!important;
+	font-size: 14px;
+	font-weight: 700;
+	border: 1px solid #fafafa;
+    border: 1px solid rgba(0,0,0,.25);
+  }
+  #gf-controls-container {
+	display: none;
+  }
+  .mobile_filter_call i {
+	margin: 0 5px 0 0;
+  }
+}
+
+ #gf-controls-container .globo-selected-items-wrapper .selected-item>a, .gf-top_one #gf-tree .globo-selected-items-wrapper .selected-item>a {
+	padding: 3px 3px 3px 5px;
+    border: 1px solid #e8e8e8;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+	color: #333;
+    background: #eee !important;
+}
+
+.spf-has-filter .selected-item span.gf-clear svg {
+	display: block!important;
+}
+
+.gf-filter-contents .gf-clear {
+	display: none;
+}
+
+.selected-item  .clear-refinements {
+	display: none!important;
+}
+
+#gf-controls-container .globo-selected-items, .gf-top_one #gf-tree .globo-selected-items {
+	position: relative;
+	left: -10px;
+}
+   
+{% endstyle %}
+
+{% if collection.title == 'Tank Tops' %}
+	<style>
+		.collection_bottom p {
+            text-align: justify!important;
+        }
+	</style>
+{% endif %}
+
+
+<div data-section-type="collection-template"
+     data-ajax-filtering="{{ section.settings.ajax_products }}"
+     data-components="tabs,product-block,price-range,accordion,sticky-scroll-direction"
+     class="pb-medium {% if section.settings.show_collection_image and collection.featured_image %}header-overlap-section{% elsif section.settings.show_collection_content %}pt-medium{% else %}sm:pt-medium{% endif %}" data-cc-animate>
+
+  {% paginate collection.products by section.settings.products_per_page %}
+    {% if section.settings.show_collection_image and collection.featured_image %}
+      <div class="collection-header image-overlay image-overlay--bg-full needs-alt-logo">
+        <div class="rimage-outer-wrapper rimage-background lazyload fade-in"
+             data-cc-animate="cc-fade-in-zoom-out"
+             data-bgset="{% render 'bgset', image: collection.featured_image %}"
+             data-sizes="auto"
+             data-parent-fit="cover">
+          <noscript>
+            <div class="rimage-wrapper" style="padding-top:{{ 1 | divided_by: collection.featured_image.aspect_ratio | times: 100 }}%">
+              <img src="{{ collection.featured_image | img_url: '1024x1024' }}" alt="{{ collection.featured_image.alt | escape }}" class="rimage__image">
+            </div>
+          </noscript>
+        </div>
+
+        <div class="overlay-type overlay" data-cc-animate="cc-fade-in-zoom-out">
+          <div class="overlay__content">
+    {% endif %}
+            
+
+      <div class="central">
+        <div class="content transparent">
+          {% if section.settings.show_collection_content %}
+            {% if collection.description != blank %}
+              <h1 class="line-1 feature-header" data-cc-animate>{{ collection.title }}</h1>
+
+              {% if section.settings.description_position == "top" %}
+                <div class="line-2 rte" data-cc-animate data-cc-animate-delay="0.2s">
+                  {{ collection.description }}
+                </div>
+              {% endif %}
+            {% else %}
+              <h1 class="line-1 feature-header no-margin" data-cc-animate>{{ collection.title }}</h1>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+    {% if section.settings.show_collection_image and collection.featured_image %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  
+
+  	<div class="wide-container">
+      <div class="form-horizontal">
+          <label for="SortBy">{{ 'collections.sorting.title' | t }}</label>
+          <select name="SortBy" id="SortBy">
+            <option value="manual">
+                {% if request.locale.iso_code == 'en' %}
+                    Featured
+                {% elsif request.locale.iso_code == 'de' %}
+                  Auswahl
+                {% endif %}
+            </option>
+            <option value="price-ascending">
+                {% if request.locale.iso_code == 'en' %}
+                     Price, low to high
+                {% elsif request.locale.iso_code == 'de' %}
+                     Preis, niedrig nach hoch
+                {% endif %}
+            </option>
+            <option value="price-descending">
+                {% if request.locale.iso_code == 'en' %}
+                    Price, high to low
+                {% elsif request.locale.iso_code == 'de' %}
+                   Preis, hoch nach niedrig
+                {% endif %}
+            </option>
+            <option value="created-descending">
+                {% if request.locale.iso_code == 'en' %}
+                
+              Date,  new  to old 
+                {% elsif request.locale.iso_code == 'de' %}
+                   Datum, neu nach alt
+                {% endif %}
+            </option>
+            <option value="created-ascending">
+                {% if request.locale.iso_code == 'en' %}
+                    Date, old to new
+                {% elsif request.locale.iso_code == 'de' %}
+                   Datum, alt nach neu   
+                {% endif %}
+            </option>
+        </select>
+      </div>
+      <p onclick="globofilter.toggleCanvas()" class="mobile_filter_call">
+      	<i class="fa fa-tasks" aria-hidden="true"></i>
+          {% if request.locale.iso_code == 'en' %}
+              Filter By
+          {% elsif request.locale.iso_code == 'de' %}
+              Filtern nach
+          {% endif %}
+      </p>
+    </div>
+
+  
+  
+  
+    {% render "search-filter",
+      mode: "collection",
+      results: collection,
+      section: section,
+      results_url: results_url,
+      paginate: paginate,
+      current_sort_by: current_sort_by
+    %}
+  
+
+    {% if collection.description != blank and section.settings.description_position == "bottom" and section.settings.show_collection_content == true %}
+      <div class="central collection_bottom footer">
+        <div class="content transparent">
+          <div class="rte">
+            {{ collection.description }}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endpaginate %}
+</div>
+
+
+
+{% schema %}
+  {
+    "name": "Collection pages",
+    "class": "theme-filter-container",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Header"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_collection_content",
+        "label": "Show collection title/description",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_collection_image",
+        "label": "Show collection image",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "description_position",
+        "label": "Description position",
+        "options": [
+          {
+            "value": "top",
+            "label": "Top"
+          },
+          {
+            "value": "bottom",
+            "label": "Bottom"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "GRID"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "label": "Layout",
+        "options": [
+          {
+            "value": "columns",
+            "label": "Collage"
+          },
+          {
+            "value": "rows",
+            "label": "Grid"
+          }
+        ],
+        "default": "rows",
+        "info": "Collage will only work when the 'Image shape' is set to Natural - in Products / Image shape"
+      },
+      {
+        "type": "range",
+        "id": "grid",
+        "label": "Desktop products per row",
+        "min": 2,
+        "max": 4,
+        "default": 3
+      },
+      {
+        "type": "select",
+        "id": "grid_mobile",
+        "label": "Mobile products per row",
+        "options": [
+          {
+            "value": "1",
+            "label": "1"
+          },
+          {
+            "value": "2",
+            "label": "2"
+          }
+        ],
+        "default": "2"
+      },
+      {
+        "type": "range",
+        "id": "products_per_page",
+        "label": "Products per page",
+        "min": 12,
+        "max": 48,
+        "step": 6,
+        "default": 18
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_infinite_scroll",
+        "label": "Enable infinite-scroll",
+        "default": true,
+        "info": "As visitors scroll down, more products are loaded in automatically."
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show product vendor",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "FILTERS"
+      },
+      {
+        "type": "paragraph",
+        "content": "To create the collection filters, go to your [navigation](\/admin\/menus) page."
+      },
+      {
+        "type": "checkbox",
+        "id": "show_filter_counts",
+        "label": "Show filter counts",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_filter_deadends",
+        "label": "Show filters with zero results",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "ajax_products",
+        "label": "Filter and sort without reloading the page",
+        "default": true,
+        "info": "Some apps require this to be disabled"
+      },
+      {
+        "type": "radio",
+        "id": "filter_mode",
+        "label": "Filter mode",
+        "default": "sidebar",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "simple",
+            "label": "Simple"
+          },
+          {
+            "value": "sidebar",
+            "label": "Sidebar"
+          }
+        ],
+        "info": "'Simple' is only recommended if you have a small number of filters. Note, it doesn't allow for multiple options within a filter to be selected and it won't show the price range filter."
+      },
+      {
+        "type": "header",
+        "content": "Sidebar Settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "sticky_sidebar",
+        "label": "Stick the sidebar on scroll",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "collapse_filters_method",
+        "label": "Filter group collapse",
+        "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "over-6",
+            "label": "Over 6 items"
+          },
+          {
+            "value": "over-12",
+            "label": "Over 12 items"
+          },
+          {
+            "value": "over-18",
+            "label": "Over 18 items"
+          },
+          {
+            "value": "all",
+            "label": "All"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "collapse_sort_by",
+        "label": "Collapse 'Sort by' filter group",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "Sorting"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_sorting",
+        "label": "Enable sorting",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_featured_in_sort",
+        "label": "Show 'Featured' option in sorting dropdown",
+        "default": false
+      }
+    ]
+  }
+{% endschema %}
+
+
+<script>
+  /*============================================================================
+    Inline JS because collection liquid object is only available
+    on collection pages and not external JS files
+  ==============================================================================*/
+  $(document).ready(function() {
+    Shopify.queryParams = {};
+    if (location.search.length) {
+      for (var aKeyValue, i = 0, aCouples = location.search.substr(1).split('&'); i < aCouples.length; i++) {
+        aKeyValue = aCouples[i].split('=');
+        if (aKeyValue.length > 1) {
+          Shopify.queryParams[decodeURIComponent(aKeyValue[0])] = decodeURIComponent(aKeyValue[1]);
+        }
+      }
+    }
+    $(function() {
+      $('#SortBy')
+        .val('{{ collection.sort_by | default: collection.default_sort_by }}')
+        .bind('change', function() {
+          Shopify.queryParams.sort_by = jQuery(this).val();
+          location.search = jQuery.param(Shopify.queryParams);
+        }
+      );
+    });
+  });
+</script>
