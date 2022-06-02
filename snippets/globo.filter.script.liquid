@@ -95,14 +95,18 @@
   };
 
 </script>
-<script defer src="{{ 'v5.globo.filter.lib.js' | asset_url }}"></script>
-{% if request.page_type == 'collection' or request.page_type == 'search' or home_filter or has_form %}<link rel="preload stylesheet" href="{{ 'v5.globo.filter.css' | asset_url }}" as="style">
+<script type="lazyload2" data-src="{{ 'v5.globo.filter.lib.js' | asset_url }}"></script>
+{% if request.page_type == 'collection' or request.page_type == 'search' or home_filter or has_form %}
+	{% render 'v5-globo-filter-css' %}
+	<link rel="stylesheet" data-href="{{ 'v5.globo.filter.css' | asset_url }}" as="style">
 {% endif %}
-{% if globo_search %}<link rel="preload stylesheet" href="{{ 'v5.globo.search.css' | asset_url }}" as="style">
+{% if globo_search %}
+    {% render 'v5-globo-search-css' %}
+	<link rel="stylesheet" data-href="{{ 'v5.globo.search.css' | asset_url }}" as="style">
 {% endif %}
 {% endif %}
 
-  <script>
+  <script type="lazyload2">
     window.addEventListener('globoFilterRenderSearchCompleted', function () {
       if (document.querySelector('#search-modal [data-modal-close]') !== null) {
         document.querySelector('#search-modal [data-modal-close]').click();

@@ -98,7 +98,7 @@
 
         {% if settings.prod_hover == "second_image" and product.media.size > 1 %}
         <div class="image__second">
-          {% render 'responsive-image', image: secondary_image, aspect_ratio: primary_image.aspect_ratio %}
+          {% render 'responsive-image-2', image: secondary_image, aspect_ratio: primary_image.aspect_ratio %}
         </div>
         {% endif %}
       </a>

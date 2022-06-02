@@ -1,0 +1,44 @@
+{%- assign base_font = settings.type_base_font -%}
+{%- assign heading_font = settings.type_heading_font -%}
+{%- assign nav_font = settings.type_nav_font -%}
+{%- assign logo_font = settings.type_logo_font -%}
+{%- assign base_font_medium = base_font | font_modify: 'weight', '500' -%}
+{%- assign base_font_semibold = base_font | font_modify: 'weight', '600' -%}
+{%- assign base_font_bold = base_font | font_modify: 'weight', 'bolder' -%}
+{%- assign base_font_italic = base_font | font_modify: 'style', 'italic' -%}
+{%- assign base_font_bold_italic = base_font_bold | font_modify: 'style', 'italic' -%}
+
+<style>
+@font-face {
+font-family: "LaguSansMedium";
+src: url("https://cdn.shopify.com/s/files/1/0026/4047/8252/t/58/assets/lagusans_medium.woff2") format("woff2");
+font-display:swap;
+}
+@font-face {
+font-family: "LaguSansRegular";
+src: url("https://cdn.shopify.com/s/files/1/0026/4047/8252/t/58/assets/lagusans-regular-webfont.woff2") format("woff2");
+font-display:swap;
+}
+@font-face {
+font-family: "SuisseIntl-Light-WebXL";
+src: url("https://cdn.shopify.com/s/files/1/0026/4047/8252/t/58/assets/SuisseIntl-Light-WebXL.woff2") format("woff2");
+font-display:swap;
+}
+</style>
+
+
+<style type="no-load">
+{{ base_font | font_face: font_display: 'swap' }}
+{{ base_font_medium | font_face: font_display: 'swap' }}
+{{ base_font_semibold | font_face: font_display: 'swap' }}
+{{ base_font_bold | font_face: font_display: 'swap' }}
+{{ heading_font | font_face: font_display: 'swap' }}
+{{ nav_font | font_face: font_display: 'swap' }}
+{{ logo_font | font_face: font_display: 'swap' }}
+
+@font-face {
+font-family: "LaguSansExtraBold";
+src: url("https://cdn.shopify.com/s/files/1/0026/4047/8252/t/58/assets/lagusans_extrabold.woff2") format("woff2");
+font-display:swap;
+}
+</style>
